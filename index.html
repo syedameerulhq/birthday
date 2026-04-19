@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday, Ruhi! 🎂</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cursor"></div>
+  <div id="cursor-dot"></div>
+
+  <!-- BACKGROUND CANVAS -->
+  <canvas id="canvas"></canvas>
+
+  <!-- ═══════ MUSIC GATE (splash screen) ═══════ -->
+  <div id="music-gate">
+    <div class="gate-emoji">🎂</div>
+    <div class="gate-title">Happy Birthday, Ruhi!</div>
+    <p class="gate-sub">Tap to open with music 🎵</p>
+    <button class="gate-btn" id="gate-btn">🎉 Open Birthday Page</button>
+  </div>
+
+  <!-- MUSIC PLAYER (mp3) -->
+  <audio id="bg-audio" loop preload="auto">
+    <source src="music.m4a" type="audio/mpeg" />
+  </audio>
+
+  <!-- MUSIC BADGE (bottom right) -->
+  <div id="music-badge">
+    <div class="eq-bars">
+      <div class="eq-bar"></div><div class="eq-bar"></div>
+      <div class="eq-bar"></div><div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+    <span id="badge-text">Jannat Theme ♫</span>
+  </div>
+
+  <!-- ═══════ HERO ═══════ -->
+  <section id="hero">
+    <div class="hero-tag">✦ A Special Surprise ✦</div>
+    <div class="hero-date">22 · APRIL · 2025</div>
+    <h1 class="hero-name">Ruhi</h1>
+    <p class="hero-sub" id="typewriter-el"></p>
+
+    <!-- CAKE — tap it! -->
+    <div class="cake-wrap" id="cake-wrap">
+      <span class="cake-emoji" id="cake-emoji">🎂</span>
+      <p class="cake-hint" id="cake-hint">tap the cake!</p>
+    </div>
+
+    <button class="scroll-cta" id="scroll-cta">
+      <span>Scroll Down</span>
+      <span class="scroll-arrow">↓</span>
+    </button>
+  </section>
+
+  <!-- ═══════ BALLOON POP GAME ═══════ -->
+  <section id="balloon-section">
+    <h2 class="section-label fade-up">Pop the Balloons! 🎈</h2>
+    <p class="section-sub fade-up">Every balloon you pop is a birthday cheer for Ruhi!</p>
+    <div class="balloon-score-wrap fade-up">
+      <span class="balloon-score-label">Popped:</span>
+      <span class="balloon-score" id="balloon-score">0</span>
+    </div>
+    <div id="balloon-arena" class="fade-up"></div>
+  </section>
+
+  <!-- ═══════ WISHES ═══════ -->
+  <section id="wishes">
+    <h2 class="section-label fade-up">Birthday Wishes 🎀</h2>
+    <div class="wishes-grid">
+      <div class="wish-card fade-up" data-delay="0">
+        <span class="wish-icon">🌟</span>
+        <div class="wish-title">Shine Bright</div>
+        <p class="wish-text">May this year bring you everything you've been quietly working towards. You deserve every single bit of it.</p>
+      </div>
+      <div class="wish-card fade-up" data-delay="80">
+        <span class="wish-icon">🚀</span>
+        <div class="wish-title">Go Far</div>
+        <p class="wish-text">Your ambition is real, your talent is undeniable. This is the year you make the world notice you.</p>
+      </div>
+      <div class="wish-card fade-up" data-delay="160">
+        <span class="wish-icon">😂</span>
+        <div class="wish-title">Laugh More</div>
+        <p class="wish-text">May every day be filled with genuine laughter, good food, and people who truly get you.</p>
+      </div>
+      <div class="wish-card fade-up" data-delay="240">
+        <span class="wish-icon">🌈</span>
+        <div class="wish-title">Just Be Happy</div>
+        <p class="wish-text">That's the whole wish. No conditions, no fine print. Just pure, unbothered, full-volume happiness.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SCRATCH CARD ═══════ -->
+  <section id="scratch-section">
+    <h2 class="section-label fade-up">Your Secret Gift 🎁</h2>
+    <p class="section-sub fade-up">Scratch to reveal your birthday message</p>
+    <div class="scratch-wrap fade-up">
+      <div class="scratch-msg" id="scratch-msg">
+        🎊 You're literally one of the most interesting people around. Happy Birthday, Ruhi — stay exactly this cool. 🎊
+      </div>
+      <canvas id="scratchCanvas" width="360" height="200"></canvas>
+    </div>
+    <p class="scratch-hint fade-up" id="scratch-hint">Drag your finger / mouse to scratch ✨</p>
+  </section>
+
+  <!-- ═══════ MEMORY BOARD ═══════ -->
+  <section id="memories">
+    <h2 class="section-label fade-up">Little Things About You 🧩</h2>
+    <p class="section-sub fade-up">Hover or tap each tile to reveal</p>
+    <div class="memory-grid">
+      <div class="memory-tile fade-up" data-delay="0">
+        <span class="tile-front">😄</span><span class="tile-label">Your vibe</span>
+        <div class="tile-reveal">That energy you carry walks into the room before you even do.</div>
+      </div>
+      <div class="memory-tile fade-up" data-delay="60">
+        <span class="tile-front">✨</span><span class="tile-label">Your spark</span>
+        <div class="tile-reveal">You make ordinary moments feel somehow worth remembering.</div>
+      </div>
+      <div class="memory-tile fade-up" data-delay="120">
+        <span class="tile-front">💬</span><span class="tile-label">Your words</span>
+        <div class="tile-reveal">The way you talk about things you love — that energy is contagious.</div>
+      </div>
+      <div class="memory-tile fade-up" data-delay="180">
+        <span class="tile-front">🌙</span><span class="tile-label">Your calm</span>
+        <div class="tile-reveal">Even on chaotic days, you somehow make it look effortless.</div>
+      </div>
+      <div class="memory-tile fade-up" data-delay="240">
+        <span class="tile-front">🔥</span><span class="tile-label">Your fire</span>
+        <div class="tile-reveal">When you set your mind to something? It's already done.</div>
+      </div>
+      <div class="memory-tile fade-up" data-delay="300">
+        <span class="tile-front">🎂</span><span class="tile-label">Today</span>
+        <div class="tile-reveal">Wishing you a day as legendary as you actually are.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ AGE CALCULATOR (FIXED) ═══════ -->
+  <section id="age-section">
+    <h2 class="section-label fade-up">How Long You've Been Awesome ⏳</h2>
+    <p class="section-sub fade-up" id="age-headline">Calculating...</p>
+    <div class="age-grid fade-up">
+      <div class="age-box"><div class="age-num" id="a-years">—</div><div class="age-lbl">Years</div></div>
+      <div class="age-box"><div class="age-num" id="a-months">—</div><div class="age-lbl">Months</div></div>
+      <div class="age-box"><div class="age-num" id="a-days">—</div><div class="age-lbl">Days</div></div>
+      <div class="age-box"><div class="age-num" id="a-hours">—</div><div class="age-lbl">Hours</div></div>
+      <div class="age-box"><div class="age-num" id="a-mins">—</div><div class="age-lbl">Minutes</div></div>
+      <div class="age-box"><div class="age-num" id="a-secs">—</div><div class="age-lbl">Seconds</div></div>
+    </div>
+    <p class="age-caption fade-up">…and somehow still getting better. That's unfair honestly. 😄</p>
+    <p class="age-note fade-up">⚠️ Enter her real birth year below for exact age</p>
+    <div class="age-input-wrap fade-up">
+      <input type="number" id="birth-year" placeholder="e.g. 2003" min="1990" max="2015" />
+      <button id="set-year-btn">Set Birth Year</button>
+    </div>
+  </section>
+
+  <!-- ═══════ CLAP ═══════ -->
+  <section id="clap-section">
+    <h2 class="section-label fade-up">Send Birthday Wishes 👏</h2>
+    <p class="section-sub fade-up">Tap to clap for Ruhi — every clap is a wish sent!</p>
+    <div class="clap-count fade-up" id="clap-count">0</div>
+    <div class="fade-up">
+      <button class="clap-btn" id="clap-btn">👏</button>
+    </div>
+    <p class="clap-label fade-up" id="clap-label">Start clapping!</p>
+    <div class="clap-milestones fade-up" id="clap-milestones"></div>
+  </section>
+
+  <!-- ═══════ QUIZ ═══════ -->
+  <section id="quiz-section">
+    <h2 class="section-label fade-up">Birthday Quiz 🧠</h2>
+    <p class="section-sub fade-up">How well do you know Ruhi?</p>
+    <div class="quiz-card fade-up" id="quiz-card">
+      <div class="quiz-progress-bar"><div id="quiz-progress"></div></div>
+      <p class="quiz-q" id="quiz-q">Loading question...</p>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-nav">
+        <span class="quiz-count" id="quiz-count">1 / 5</span>
+        <button class="quiz-next" id="quiz-next" style="display:none">Next →</button>
+      </div>
+    </div>
+    <div class="quiz-result" id="quiz-result" style="display:none">
+      <div class="quiz-result-emoji" id="qr-emoji">🎉</div>
+      <div class="quiz-result-score" id="qr-score"></div>
+      <div class="quiz-result-msg" id="qr-msg"></div>
+      <button class="quiz-retry" id="quiz-retry">Try Again 🔄</button>
+    </div>
+  </section>
+
+  <!-- ═══════ MESSAGE ═══════ -->
+  <section id="message-section">
+    <h2 class="section-label fade-up">A Note 📝</h2>
+    <div class="msg-card fade-up">
+      <div class="msg-from">From someone who noticed ✦</div>
+      <p class="msg-text">
+        Hey Ruhi,<br><br>
+        Birthdays are weird. Everyone tells you you're special today,
+        but honestly? You were special yesterday too. And the day before.<br><br>
+        So this isn't a "happy birthday because I have to" message.
+        This is a "you're genuinely one of the good ones and I hope
+        this year is as good as you are" message.<br><br>
+        Go eat cake. Laugh loud. Have a ridiculous amount of fun.
+        You earned it.
+      </p>
+      <div class="msg-sig">Happy Birthday, Ruhi 🎉</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    Made with good vibes for <span class="footer-pink">Ruhi</span> · 22 April 2025 ✦
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
