@@ -50,7 +50,38 @@ function spawnRipple(x, y) {
   document.body.appendChild(r);
   setTimeout(() => r.remove(), 700);
 }
+/* ─────────────────────────────────
+   GOODBYE POPUP
+───────────────────────────────── */
+function closeGoodbyePopup() {
+  const overlay = document.getElementById('goodbye-overlay');
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.45s';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    overlay.style.opacity = '1';
+    overlay.style.transition = '';
+  }, 450);
+  spawnConfetti(30);
+  playTone(320, 0.1, 0.4, 'sine');
+}
 
+document.getElementById('gb-close-btn').addEventListener('click', closeGoodbyePopup);
+document.getElementById('gb-x-btn').addEventListener('click', closeGoodbyePopup);
+
+// Close on overlay background tap (outside modal)
+document.getElementById('goodbye-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeGoodbyePopup();
+});
+
+// Auto-show after 30 seconds
+setTimeout(() => {
+  document.getElementById('goodbye-overlay').style.display = 'flex';
+}, 30000);
+// Auto-show popup after 30 seconds (optional — remove if you want manual only)
+setTimeout(() => {
+  document.getElementById('goodbye-overlay').style.display = 'flex';
+}, 30000);
 /* ─────────────────────────────────
    SPARKLE TRAIL
 ───────────────────────────────── */
@@ -78,7 +109,7 @@ function maybeSparkle(x, y) {
 }
 
 /* ─────────────────────────────────
-   BACKGROUND CANVAS PARTICLES
+   BACKGROUND CANVAS PARTICLES + BUTTERFLIES
 ───────────────────────────────── */
 const cv = document.getElementById('canvas');
 const cx = cv.getContext('2d');
@@ -95,9 +126,9 @@ const bgParticles = Array.from({ length: 30 }, () => makeBgParticle());
 
 function makeBgParticle() {
   return {
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    e: bgEmojis[Math.floor(Math.random() * bgEmojis.length)],
+    x:  Math.random() * window.innerWidth,
+    y:  Math.random() * window.innerHeight,
+    e:  bgEmojis[Math.floor(Math.random() * bgEmojis.length)],
     s:  9 + Math.random() * 18,
     sp: 0.15 + Math.random() * 0.55,
     o:  0.08 + Math.random() * 0.3,
@@ -107,19 +138,76 @@ function makeBgParticle() {
   };
 }
 
+/* ── Background Butterflies ── */
+const BG_BF_COUNT = 10;
+const bgBfEmojis  = ['🦋'];
+
+function makeBgBf() {
+  const fromLeft = Math.random() < 0.5;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  return {
+    x:     fromLeft ? -60 : w + 60,
+    y:     30 + Math.random() * (h - 80),
+    dir:   fromLeft ? 1 : -1,
+    speed: 0.28 + Math.random() * 0.55,
+    size:  14 + Math.random() * 22,
+    opacity: 0.10 + Math.random() * 0.22,
+    wAmp:  18 + Math.random() * 38,
+    wFreq: 0.0018 + Math.random() * 0.003,
+    t:     Math.random() * 1000,
+    flip:  1,
+    rot:   0,
+  };
+}
+
+const bgBfs = Array.from({ length: BG_BF_COUNT }, makeBgBf);
+
 (function drawBg() {
   cx.clearRect(0, 0, cv.width, cv.height);
+
+  /* regular particles */
   bgParticles.forEach(p => {
     p.y -= p.sp;
     p.w += p.ws;
     p.x += Math.sin(p.w) * 0.7 + p.d;
-    if (p.y < -40) { Object.assign(p, makeBgParticle()); p.y = cv.height + 30; p.x = Math.random() * cv.width; }
+    if (p.y < -40) {
+      Object.assign(p, makeBgParticle());
+      p.y = cv.height + 30;
+      p.x = Math.random() * cv.width;
+    }
     cx.save();
     cx.globalAlpha = p.o;
     cx.font = p.s + 'px serif';
     cx.fillText(p.e, p.x, p.y);
     cx.restore();
   });
+
+  /* background butterflies */
+  bgBfs.forEach((b, i) => {
+    b.t += 1;
+    b.x += b.speed * b.dir;
+    b.y  = b.y + Math.sin(b.t * b.wFreq) * b.wAmp * 0.035;
+    b.rot = Math.sin(b.t * b.wFreq * 1.5) * 14;
+    b.flip = Math.cos(b.t * 0.018) > 0 ? 1 : -1;
+
+    /* reset when off screen */
+    const offLeft  = b.dir > 0 && b.x > cv.width  + 80;
+    const offRight = b.dir < 0 && b.x < -80;
+    if (offLeft || offRight) {
+      bgBfs[i] = makeBgBf();
+    }
+
+    cx.save();
+    cx.globalAlpha = b.opacity;
+    cx.font = b.size + 'px serif';
+    cx.translate(b.x + b.size / 2, b.y + b.size / 2);
+    cx.rotate(b.rot * Math.PI / 180);
+    cx.scale(b.flip, 1);
+    cx.fillText('🦋', -b.size / 2, b.size / 2);
+    cx.restore();
+  });
+
   requestAnimationFrame(drawBg);
 })();
 
@@ -238,7 +326,142 @@ setTimeout(typeChar, 1600);
 document.getElementById('scroll-cta').addEventListener('click', () => {
   document.getElementById('balloon-section').scrollIntoView({ behavior: 'smooth' });
 });
+/* ─────────────────────────────────
+   BUTTERFLY GARDEN 🦋
+───────────────────────────────── */
+(function initButterflies() {
+  const bfArena   = document.getElementById('bf-arena');
+  const bfCountEl = document.getElementById('bf-count');
+  const bfEscEl   = document.getElementById('bf-escaped');
+  const bfMsEl    = document.getElementById('bf-milestone');
+  if (!bfArena) return;
 
+  const bfEmojis = ['🦋','🦋','🦋','🦋','🦋','🌸','🌺','🦋'];
+  const bfMsgs   = ['Mubarak! 🎉','Ruhi ke liye dua! 🤍','Beautiful! ✨','Waah! 🌟',
+                    'Pakad li! 🦋','Aur pakdo! 💜','Subhaan Allah 🌸','Ruhi jaise! 🥰'];
+  const bfHearts = ['💜','🌸','✨','💖','⭐'];
+  const bfMilestones = {
+    1:'Pehli titli! Shuruaat ho gayi 🌱',
+    5:'5 titliyan! Ruhi mushkuraa rahi hogi 😊',
+    10:'10! Ek poora garden ho gaya 🌺',
+    20:'20 titliyan! Aap bhi Ruhi jaise cute ho 🥺',
+    30:'30!! Subhaan Allah — kya baat hai 🌙',
+    50:'50 titliyan! Ruhi is lucky to have you 💜',
+  };
+
+  let bfCaught = 0, bfEscaped = 0;
+
+  // Decorative flowers
+  const flrs = ['🌸','🌺','🌼','🌻','🌷'];
+  for (let i = 0; i < 9; i++) {
+    const f = document.createElement('div');
+    f.className = 'bf-flower-deco';
+    f.textContent = flrs[Math.floor(Math.random() * flrs.length)];
+    f.style.left   = (5 + Math.random() * 90) + '%';
+    f.style.bottom = (Math.random() * 55) + 'px';
+    f.style.animationDelay = (Math.random() * 4) + 's';
+    bfArena.appendChild(f);
+  }
+
+  function spawnBf() {
+    const w = bfArena.clientWidth  || 760;
+    const h = bfArena.clientHeight || 380;
+    const el = document.createElement('div');
+    el.className   = 'bf';
+    el.textContent = bfEmojis[Math.floor(Math.random() * bfEmojis.length)];
+
+    const fromLeft = Math.random() < 0.5;
+    const startX   = fromLeft ? -45 : w + 10;
+    const startY   = 25 + Math.random() * (h - 80);
+    const targetX  = fromLeft ? w + 55 : -55;
+    const dur      = 5000 + Math.random() * 6000;
+    const wAmp     = 28 + Math.random() * 55;
+    const wFreq    = 0.003 + Math.random() * 0.004;
+
+    el.style.left = startX + 'px';
+    el.style.top  = startY + 'px';
+
+    let t0 = null, done = false;
+
+    function frame(ts) {
+      if (done) return;
+      if (!t0) t0 = ts;
+      const p = (ts - t0) / dur;
+      if (p >= 1) {
+        bfEscaped++;
+        bfEscEl.textContent = bfEscaped;
+        el.remove();
+        return;
+      }
+      const cx = startX + (targetX - startX) * p;
+      const cy = startY + Math.sin((ts - t0) * wFreq) * wAmp;
+      const rot = Math.sin((ts - t0) * wFreq * 1.5) * 16;
+      const flip = Math.cos((ts - t0) * 0.007) > 0 ? 1 : -1;
+      el.style.left      = cx + 'px';
+      el.style.top       = cy + 'px';
+      el.style.transform = `scaleX(${flip}) rotate(${rot}deg)`;
+      requestAnimationFrame(frame);
+    }
+
+    function catchIt(e) {
+      if (done) return;
+      done = true;
+      el.classList.add('caught');
+      bfCaught++;
+      bfCountEl.textContent = bfCaught;
+      playTone(660 + bfCaught * 5, 0.1, 0.22);
+      spawnConfetti(14);
+
+      const arRect = bfArena.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const bx = elRect.left - arRect.left + 17;
+      const by = elRect.top  - arRect.top  + 8;
+
+      const pm = document.createElement('div');
+      pm.className   = 'bf-pop-msg';
+      pm.textContent = bfMsgs[Math.floor(Math.random() * bfMsgs.length)];
+      pm.style.left  = bx + 'px';
+      pm.style.top   = by + 'px';
+      bfArena.appendChild(pm);
+      setTimeout(() => pm.remove(), 1100);
+
+      for (let i = 0; i < 5; i++) {
+        const hrt = document.createElement('div');
+        hrt.className   = 'bf-heart-burst';
+        hrt.textContent = bfHearts[i];
+        hrt.style.left  = bx + 'px';
+        hrt.style.top   = by + 'px';
+        const ang = (i / 5) * Math.PI * 2;
+        hrt.style.setProperty('--hx', (Math.cos(ang) * 58) + 'px');
+        hrt.style.setProperty('--hy', (Math.sin(ang) * 58 - 28) + 'px');
+        hrt.style.animationDelay = (i * 0.06) + 's';
+        bfArena.appendChild(hrt);
+        setTimeout(() => hrt.remove(), 1400);
+      }
+
+      if (bfMilestones[bfCaught]) {
+        bfMsEl.textContent   = bfMilestones[bfCaught];
+        bfMsEl.style.animation = 'none';
+        void bfMsEl.offsetWidth;
+        bfMsEl.style.animation = '';
+        if (bfCaught >= 10) spawnConfetti(40);
+      }
+
+      setTimeout(() => el.remove(), 500);
+    }
+
+    el.addEventListener('click',      catchIt);
+    el.addEventListener('touchstart', e => { e.preventDefault(); catchIt(e); }, { passive: false });
+    bfArena.appendChild(el);
+    requestAnimationFrame(frame);
+  }
+
+  function scheduleBf() {
+    spawnBf();
+    setTimeout(scheduleBf, 1000 + Math.random() * 1800);
+  }
+  scheduleBf();
+})();
 /* ─────────────────────────────────
    CAKE CLICK
 ───────────────────────────────── */
